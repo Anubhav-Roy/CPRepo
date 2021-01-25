@@ -18,7 +18,9 @@ package hackerearth;
  *
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class ReplaceString {
@@ -72,6 +74,8 @@ public class ReplaceString {
         }
 
         int difference=0;
+        long[] acs= {1,2};
+        int[] nasda = new int[acs.length];
         for(Character key : aChars.keySet()){
             int aCharFreq = aChars.get(key);
             int bCharFreq = (bChars.containsKey(key))? bChars.get(key):0;
@@ -82,8 +86,7 @@ public class ReplaceString {
                 System.out.println("NO");
                 return;
             }
-        }
-
+        } 
         System.out.println("YES");
     }
 

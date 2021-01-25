@@ -14,32 +14,76 @@ public class Q1114 {
         Foo foo = new Foo();
 
         try {
-            foo.first(new Runnable() {
+
+            Thread s = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("First");
+                    try {
+                        foo.second(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("second");
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
-            foo.second(new Runnable() {
+
+            Thread f = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("second");
+                    try {
+                        foo.first(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("First");
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
-            foo.third(new Runnable() {
+
+
+            Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("third");
+                    try {
+                        foo.third(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("third");
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
-        } catch (InterruptedException e) {
+
+
+
+
+            t.start();
+
+            s.start();
+
+            f.start();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     static class Foo {
+
+        private final Object objectLock = new Object();
+        private int counter=0;
 
         public Foo() {
 
@@ -47,20 +91,45 @@ public class Q1114 {
 
         public void first(Runnable printFirst) throws InterruptedException {
 
+            System.out.println("F");
             // printFirst.run() outputs "first". Do not change or remove this line.
-            printFirst.run();
+            synchronized (objectLock) {
+                printFirst.run();
+                counter=1;
+                objectLock.notifyAll();
+            }
         }
 
         public void second(Runnable printSecond) throws InterruptedException {
+            System.out.println("S");
 
             // printSecond.run() outputs "second". Do not change or remove this line.
-            printSecond.run();
+            synchronized (objectLock) {
+                while(counter!=1) {
+                    objectLock.wait();
+                }
+
+                printSecond.run();
+                counter=2;
+                objectLock.notifyAll();
+            }
+
         }
 
         public void third(Runnable printThird) throws InterruptedException {
+            System.out.println("T");
 
             // printThird.run() outputs "third". Do not change or remove this line.
-            printThird.run();
+
+            synchronized (objectLock) {
+
+                while(counter!=2) {
+                        objectLock.wait();
+                }
+
+                printThird.run();
+                objectLock.notifyAll();
+            }
         }
     }
 }
