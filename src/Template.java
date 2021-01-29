@@ -25,7 +25,7 @@ public class Template {
         }while(testCases>0);
     }
 
-    public static void mainLogic(){
+    static public void mainLogic(){
 
 
     }
